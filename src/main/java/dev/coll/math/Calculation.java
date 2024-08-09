@@ -1,6 +1,7 @@
 package dev.coll.math;
 
 import java.math.BigDecimal;
+import java.text.MessageFormat;
 import java.util.Stack;
 
 public class Calculation {
@@ -10,8 +11,8 @@ public class Calculation {
     this.expression = expression;
   }
 
-  public CalculationResult evaluate() {
-    char[] tokens = expression.toCharArray();
+  public CalculationResult evaluate(String[] values) {
+    char[] tokens = MessageFormat.format(expression, (Object[]) values).toCharArray();
 
     Stack<Double> doubleValues = new Stack<>();
     Stack<BigDecimal> bigDecimalvalues = new Stack<>();
