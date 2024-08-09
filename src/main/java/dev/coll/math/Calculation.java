@@ -2,13 +2,20 @@ package dev.coll.math;
 
 import java.math.BigDecimal;
 import java.text.MessageFormat;
+import java.util.LinkedList;
 import java.util.Stack;
 
 public class Calculation {
-  String expression;
+  private final String expression;
+
+  LinkedList<CalculationStep> steps = new LinkedList<>();
 
   public Calculation(String expression) {
     this.expression = expression;
+  }
+
+  public LinkedList<CalculationStep> getSteps() {
+    return steps;
   }
 
   public CalculationResult evaluate(String[] values) {
@@ -43,6 +50,8 @@ public class Calculation {
 
           doubleValues.push(applyOperator(operator, doubleValues.pop(), doubleValues.pop()));
           bigDecimalvalues.push(applyOperator(operator, bigDecimalvalues.pop(), bigDecimalvalues.pop()));
+
+          addStep(doubleValues.peek(), bigDecimalvalues.peek());
         }
 
         operators.pop();
@@ -53,6 +62,8 @@ public class Calculation {
 
           doubleValues.push(applyOperator(operator, doubleValues.pop(), doubleValues.pop()));
           bigDecimalvalues.push(applyOperator(operator, bigDecimalvalues.pop(), bigDecimalvalues.pop()));
+
+          addStep(doubleValues.peek(), bigDecimalvalues.peek());
         }
 
         operators.push(tokens[i]);
@@ -64,11 +75,19 @@ public class Calculation {
       char operator = operators.pop();
       doubleValues.push(applyOperator(operator, doubleValues.pop(), doubleValues.pop()));
       bigDecimalvalues.push(applyOperator(operator, bigDecimalvalues.pop(), bigDecimalvalues.pop()));
+
+      addStep(doubleValues.peek(), bigDecimalvalues.peek());
     }
 
     // The result is the only remaining element in the
     // values stack
     return new CalculationResult(doubleValues.pop().toString(), bigDecimalvalues.pop().toString());
+  }
+
+  private void addStep(Double dValue, BigDecimal bdValue) {
+    BigDecimal difference = bdValue.subtract(BigDecimal.valueOf(dValue));
+
+    steps.add(new CalculationStep(dValue.toString(), bdValue.toString(), difference.toString()));
   }
 
   // Function to check if operator1 has higher precedence
