@@ -15,12 +15,19 @@
     <maven.compiler.target>21</maven.compiler.target>
 
     <junit.version>3.8.1</junit.version>
+    <apache-math3.version>3.6.1</apache-math3.version>
 
     <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
     <exec-maven-plugin.version>3.3.0</exec-maven-plugin.version>
   </properties>
 
   <dependencies>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-math3</artifactId>
+      <version>${apache-math3.version}</version>
+    </dependency>
+
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
