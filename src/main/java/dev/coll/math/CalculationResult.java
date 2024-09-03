@@ -13,7 +13,7 @@ public class CalculationResult {
     return doubleResult;
   }
 
-  public String getBigDecimalResult() {
+  public String getBigRealResult() {
     return bigDecimalResult;
   }
 }

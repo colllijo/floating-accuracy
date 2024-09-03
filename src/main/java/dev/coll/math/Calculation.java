@@ -1,6 +1,7 @@
 package dev.coll.math;
 
-import java.math.BigDecimal;
+import org.apache.commons.math3.util.BigReal;
+
 import java.text.MessageFormat;
 import java.util.LinkedList;
 import java.util.Stack;
@@ -22,7 +23,7 @@ public class Calculation {
     char[] tokens = MessageFormat.format(expression, (Object[]) values).toCharArray();
 
     Stack<Double> doubleValues = new Stack<>();
-    Stack<BigDecimal> bigDecimalvalues = new Stack<>();
+    Stack<BigReal> bigRealValues = new Stack<>();
     Stack<Character> operators = new Stack<>();
 
     // Iterate through each character in the expression
@@ -39,7 +40,7 @@ public class Calculation {
         }
 
         doubleValues.push(Double.parseDouble(value.toString()));
-        bigDecimalvalues.push(new BigDecimal(value.toString()));
+        bigRealValues.push(new BigReal(value.toString()));
 
         i--;
       } else if (tokens[i] == '(') {
@@ -49,9 +50,9 @@ public class Calculation {
           char operator = operators.pop();
 
           doubleValues.push(applyOperator(operator, doubleValues.pop(), doubleValues.pop()));
-          bigDecimalvalues.push(applyOperator(operator, bigDecimalvalues.pop(), bigDecimalvalues.pop()));
+          bigRealValues.push(applyOperator(operator, bigRealValues.pop(), bigRealValues.pop()));
 
-          addStep(doubleValues.peek(), bigDecimalvalues.peek());
+          addStep(doubleValues.peek(), bigRealValues.peek());
         }
 
         operators.pop();
@@ -61,9 +62,9 @@ public class Calculation {
           char operator = operators.pop();
 
           doubleValues.push(applyOperator(operator, doubleValues.pop(), doubleValues.pop()));
-          bigDecimalvalues.push(applyOperator(operator, bigDecimalvalues.pop(), bigDecimalvalues.pop()));
+          bigRealValues.push(applyOperator(operator, bigRealValues.pop(), bigRealValues.pop()));
 
-          addStep(doubleValues.peek(), bigDecimalvalues.peek());
+          addStep(doubleValues.peek(), bigRealValues.peek());
         }
 
         operators.push(tokens[i]);
@@ -74,20 +75,20 @@ public class Calculation {
     while (!operators.isEmpty()) {
       char operator = operators.pop();
       doubleValues.push(applyOperator(operator, doubleValues.pop(), doubleValues.pop()));
-      bigDecimalvalues.push(applyOperator(operator, bigDecimalvalues.pop(), bigDecimalvalues.pop()));
+      bigRealValues.push(applyOperator(operator, bigRealValues.pop(), bigRealValues.pop()));
 
-      addStep(doubleValues.peek(), bigDecimalvalues.peek());
+      addStep(doubleValues.peek(), bigRealValues.peek());
     }
 
     // The result is the only remaining element in the
     // values stack
-    return new CalculationResult(doubleValues.pop().toString(), bigDecimalvalues.pop().toString());
+    return new CalculationResult(doubleValues.pop().toString(), bigRealValues.pop().bigDecimalValue().toString());
   }
 
-  private void addStep(Double dValue, BigDecimal bdValue) {
-    BigDecimal difference = bdValue.subtract(BigDecimal.valueOf(dValue));
+  private void addStep(Double dValue, BigReal brValue) {
+    BigReal difference = brValue.subtract(new BigReal(dValue));
 
-    steps.add(new CalculationStep(dValue.toString(), bdValue.toString(), difference.toString()));
+    steps.add(new CalculationStep(dValue.toString(), brValue.bigDecimalValue().toString(), difference.bigDecimalValue().toString()));
   }
 
   // Function to check if operator1 has higher precedence
@@ -113,7 +114,7 @@ public class Calculation {
     return 0;
   }
 
-  private BigDecimal applyOperator(char operator, BigDecimal b, BigDecimal a) {
+  private BigReal applyOperator(char operator, BigReal b, BigReal a) {
     switch (operator) {
       case '+':
         return a.add(b);
@@ -124,6 +125,6 @@ public class Calculation {
       case '/':
         return a.divide(b);
     }
-    return BigDecimal.ZERO;
+    return BigReal.ZERO;
   }
 }

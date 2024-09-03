@@ -1,7 +1,5 @@
 package dev.coll.math;
 
-import java.math.BigDecimal;
-
 public enum Operator {
   ADD, SUBTRACT, MULTIPLY, DIVIDE;
 
@@ -35,18 +33,18 @@ public enum Operator {
     }
   }
 
-  public BigDecimal apply(BigDecimal b, BigDecimal a) {
-    switch (this) {
-      case ADD:
-        return a.add(b);
-      case SUBTRACT:
-        return a.subtract(b);
-      case MULTIPLY:
-        return a.multiply(b);
-      case DIVIDE:
-        return a.divide(b);
-      default:
-        return BigDecimal.ZERO;
-    }
-  }
+//  public BigReal apply(BigReal b, BigReal a) {
+//    switch (this) {
+//      case ADD:
+//        return a.add(b);
+//      case SUBTRACT:
+//        return a.subtract(b);
+//      case MULTIPLY:
+//        return a.multiply(b);
+//      case DIVIDE:
+//        return a.divide(b);
+//      default:
+//        return BigReal.ZERO;
+//    }
+//  }
 }
