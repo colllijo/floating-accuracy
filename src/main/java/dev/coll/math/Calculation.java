@@ -6,6 +6,8 @@ import java.text.MessageFormat;
 import java.util.LinkedList;
 import java.util.Stack;
 
+import static dev.coll.math.Operator.hasPrecedence;
+
 public class Calculation {
   private final String expression;
 
@@ -49,9 +51,12 @@ public class Calculation {
         while (operators.peek() != '(') {
           char operator = operators.pop();
 
-          doubleValues.push(applyOperator(operator, doubleValues.pop(), doubleValues.pop()));
-          bigRealValues.push(applyOperator(operator, bigRealValues.pop(), bigRealValues.pop()));
-
+          try {
+              doubleValues.push(Operator.fromChar(operator).apply(doubleValues.pop(), doubleValues.pop()));
+              bigRealValues.push(Operator.fromChar(operator).apply(bigRealValues.pop(), bigRealValues.pop()));
+          } catch (NullPointerException e) {
+              System.err.println("Character '" + operator + "' is not a valid operator.");
+          }
           addStep(doubleValues.peek(), bigRealValues.peek());
         }
 
@@ -61,9 +66,12 @@ public class Calculation {
               && hasPrecedence(tokens[i], operators.peek())) {
           char operator = operators.pop();
 
-          doubleValues.push(applyOperator(operator, doubleValues.pop(), doubleValues.pop()));
-          bigRealValues.push(applyOperator(operator, bigRealValues.pop(), bigRealValues.pop()));
-
+          try {
+              doubleValues.push(Operator.fromChar(operator).apply(doubleValues.pop(), doubleValues.pop()));
+              bigRealValues.push(Operator.fromChar(operator).apply(bigRealValues.pop(), bigRealValues.pop()));
+          } catch (NullPointerException e) {
+              System.err.println("Character '" + operator + "' is not a valid operator.");
+          }
           addStep(doubleValues.peek(), bigRealValues.peek());
         }
 
@@ -74,9 +82,13 @@ public class Calculation {
     // Process any remaining operators in the stack
     while (!operators.isEmpty()) {
       char operator = operators.pop();
-      doubleValues.push(applyOperator(operator, doubleValues.pop(), doubleValues.pop()));
-      bigRealValues.push(applyOperator(operator, bigRealValues.pop(), bigRealValues.pop()));
 
+      try {
+          doubleValues.push(Operator.fromChar(operator).apply(doubleValues.pop(), doubleValues.pop()));
+          bigRealValues.push(Operator.fromChar(operator).apply(bigRealValues.pop(), bigRealValues.pop()));
+      } catch (NullPointerException e) {
+          System.err.println("Character '" + operator + "' is not a valid operator.");
+      }
       addStep(doubleValues.peek(), bigRealValues.peek());
     }
 
@@ -91,40 +103,6 @@ public class Calculation {
     steps.add(new CalculationStep(dValue.toString(), brValue.bigDecimalValue().toString(), difference.bigDecimalValue().toString()));
   }
 
-  // Function to check if operator1 has higher precedence
-  // than operator2
-  private boolean hasPrecedence(char operator1, char operator2) {
-    if (operator2 == '(' || operator2 == ')') return false;
-    return (operator1 != '*' && operator1 != '/')
-        || (operator2 != '+' && operator2 != '-');
-  }
 
-  private double applyOperator(char operator, double b, double a) {
-    switch (operator) {
-      case '+':
-        return a + b;
-      case '-':
-        return a - b;
-      case '*':
-        return a * b;
-      case '/':
-        if (b == 0) throw new ArithmeticException("Cannot divide by zero");
-        return a / b;
-    }
-    return 0;
-  }
 
-  private BigReal applyOperator(char operator, BigReal b, BigReal a) {
-    switch (operator) {
-      case '+':
-        return a.add(b);
-      case '-':
-        return a.subtract(b);
-      case '*':
-        return a.multiply(b);
-      case '/':
-        return a.divide(b);
-    }
-    return BigReal.ZERO;
-  }
 }

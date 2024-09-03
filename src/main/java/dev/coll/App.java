@@ -8,10 +8,10 @@ import dev.coll.math.CalculationStep;
 
 public class App {
   public static void main(String[] args) {
-    String expression = "({0} + {1}) * {2} / 9";
+    String expression = "({0} + {1}) * {2} / {3}";
 
     Calculation calc = new Calculation(expression);
-    CalculationResult result = calc.evaluate(new String[] { "0.1", "0.2", "2" });
+    CalculationResult result = calc.evaluate(new String[] { "0.1", "0.2", "2", "9" });
     LinkedList<CalculationStep> steps = calc.getSteps();
 
     for (CalculationStep step : steps) {
