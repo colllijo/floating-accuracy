@@ -33,13 +33,12 @@ public class Calculation {
       if (tokens[i] == ' ')
         continue;
 
-      if (Character.isDigit(tokens[i]) || tokens[i] == '.') {
+      if (Character.isDigit(tokens[i]) || tokens[i] == '.' || (tokens[i] == '-' && i + 1 < tokens.length && Character.isDigit(tokens[i + 1]))) {
         StringBuilder value = new StringBuilder();
-        while (i < tokens.length
-              && (Character.isDigit(tokens[i]) || tokens[i] == '.')) {
+        do {
           value.append(tokens[i]);
           i++;
-        }
+        } while (i < tokens.length && (Character.isDigit(tokens[i]) || tokens[i] == '.'));
 
         doubleValues.push(Double.parseDouble(value.toString()));
         bigRealValues.push(new BigReal(value.toString()));
