@@ -60,7 +60,7 @@ public class Calculation {
         }
 
         operators.pop();
-      } else if (tokens[i] == '+' || tokens[i] == '-' || tokens[i] == '*' || tokens[i] == '/') {
+      } else if (tokens[i] == '+' || tokens[i] == '-' || tokens[i] == '*' || tokens[i] == '/' || tokens[i] == '^') {
         while (!operators.isEmpty()
               && hasPrecedence(tokens[i], operators.peek())) {
           char operator = operators.pop();
