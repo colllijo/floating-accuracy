@@ -20,6 +20,7 @@ public class App {
     Map<String, String> expressions = Map.of(
             "default", "({0} + {1}) * {2} / {3}"
     );
+    Map<String, CalculationParameter> // TODO: CalculationParameter
     String[] keys = expressions.keySet().toArray(new String[0]);
 
     List<CalculationDto> calculations = new ArrayList<>();
@@ -27,7 +28,7 @@ public class App {
     for (int i = 0; i < keys.length; i++) {
 
       for (int j = 0; j < sample_size; j++) {
-        String[] values = new String[] { "0.2", "0.1", "2", "3" };
+        String[] values = new String[] { "0.2", "0.1", "2", "3" }; // TODO: get CalculationParameters from keys[i], then getValue()
 
         Calculation calc = new Calculation(expressions.get(keys[i]));
         CalculationResult result = calc.evaluate(values);
