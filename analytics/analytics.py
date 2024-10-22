@@ -4,11 +4,19 @@ import json
 import matplotlib.pyplot as plt
 
 
+
 # Load the JSON file into a Pandas DataFrame
 def load_data(json_file):
     with open(json_file, 'r') as file:
         data = json.load(file)
+        print(data)
 
+     # Verify that `data` is a list of dictionaries
+    if not isinstance(data, list):
+        print(data)
+        raise ValueError("JSON data should be a list of dictionaries")
+
+    print("hello")
     # Extract the relevant information into a DataFrame
     results = []
     for entry in data:
@@ -51,8 +59,10 @@ def create_difference_plot(df, output_file='difference_plot.png'):
 class DifferencePlotScene(Scene):
     def construct(self):
         # Load the data
+        print("Hello")
         json_file = 'calculation_results.json'  # Replace with your JSON file path
         df = load_data(json_file)
+        print(json_file)
 
         # Analyze the differences and create the plot
         df = analyze_differences(df)
