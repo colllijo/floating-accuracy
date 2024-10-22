@@ -1,26 +1,39 @@
 package dev.coll;
 
-import java.util.LinkedList;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.coll.math.Calculation;
+import dev.coll.math.CalculationDto;
 import dev.coll.math.CalculationResult;
-import dev.coll.math.CalculationStep;
+
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class App {
-  public static void main(String[] args) {
+  public static void main(String[] args) throws IOException {
+    int sample_size = 1;
 
     String expression = "({0} + {1}) * {2} / {3}";
 
-    Calculation calc = new Calculation(expression);
-    CalculationResult result = calc.evaluate(new String[] { getRandomDoubleString(), getRandomDoubleString(), getRandomDoubleString(), getRandomNonZeroDouble() });
-    LinkedList<CalculationStep> steps = calc.getSteps();
+    List<CalculationDto> calculations = new ArrayList<>();
 
-    for (CalculationStep step : steps) {
-      System.out.println(step);
+
+    for (int i = 0; i < sample_size; i++) {
+      String[] values = new String[] { "0.2", "0.1", "2", "3" };
+
+      Calculation calc = new Calculation(expression);
+      CalculationResult result = calc.evaluate(values);
+
+      calculations.add(new CalculationDto(result, calc.getSteps(), values));
     }
 
-    System.out.println("Double result: " + result.getDoubleResult());
-    System.out.println("BigReal result: " + result.getBigRealResult());
+    ObjectMapper mapper = new ObjectMapper();
+    BufferedWriter writer = new BufferedWriter(new FileWriter("calc.json"));
+    writer.write(mapper.writeValueAsString(calculations));
+
+    writer.close();
   }
 
   private static String getRandomDoubleString() {
