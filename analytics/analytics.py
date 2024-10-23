@@ -1,89 +1,86 @@
-from manim import *
 import pandas as pd
 import json
 import matplotlib.pyplot as plt
-
 
 
 # Load the JSON file into a Pandas DataFrame
 def load_data(json_file):
     with open(json_file, 'r') as file:
         data = json.load(file)
-        print(data)
 
-     # Verify that `data` is a list of dictionaries
-    if not isinstance(data, list):
-        print(data)
-        raise ValueError("JSON data should be a list of dictionaries")
-
-    print("hello")
     # Extract the relevant information into a DataFrame
     results = []
     for entry in data:
-        result = entry['result']
-        steps = entry['steps']
+        result = entry.get('result', {})
+        double_result = float(result.get('doubleResult', 0))
+        big_real_result = float(result.get('bigRealResult', 0))
 
-        # Flatten the data for easier analysis
+        steps = entry.get('steps', [])
         for step in steps:
             results.append({
-                "doubleResult": float(result['doubleResult']),
-                "bigRealResult": float(result['bigRealResult']),
-                "step_dValue": float(step['dValue']),
-                "step_bdValue": float(step['bdValue']),
-                "step_difference": float(step['difference']),
+                "calculation": entry.get('calculation', ''),
+                "doubleResult": double_result,
+                "bigRealResult": big_real_result,
+                "step_dValue": float(step.get('dValue', 0)),
+                "step_bdValue": float(step.get('bdValue', 0)),
+                "step_difference": float(step.get('difference', 0)),
+                "overall_difference": double_result - big_real_result,
             })
 
     return pd.DataFrame(results)
 
 
-# Analyze the differences between doubleResult and bigRealResult
-def analyze_differences(df):
-    df['overall_difference'] = df['doubleResult'] - df['bigRealResult']
-    return df
-
-
-# Function to create a bar plot and save it as an image
-def create_difference_plot(df, output_file='difference_plot.png'):
+# Function to create various plots
+def create_statistical_graphics(df):
+    # Bar plot of step differences
     plt.figure(figsize=(10, 6))
-    df['step_difference'].plot(kind='bar', color='red', alpha=0.7, label='Step Differences')
-    plt.title('Difference Between dValue and bdValue at Each Step')
+    df['step_difference'].plot(kind='bar', color='red', alpha=0.7)
+    plt.title('Step Differences Between dValue and bdValue')
     plt.xlabel('Step Index')
     plt.ylabel('Difference (E-17 scale)')
     plt.tight_layout()
-    plt.legend()
-    plt.savefig(output_file)
+    plt.savefig('media/images/step_difference_plot.png')  # Updated path
     plt.close()
 
+    # Histogram of step_dValue and step_bdValue
+    plt.figure(figsize=(10, 6))
+    plt.hist(df['step_dValue'], bins=10, alpha=0.5, label='dValue', color='blue')
+    plt.hist(df['step_bdValue'], bins=10, alpha=0.5, label='bdValue', color='green')
+    plt.title('Histogram of dValue and bdValue')
+    plt.xlabel('Value')
+    plt.ylabel('Frequency')
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig('media/images/histogram_values.png')  # Updated path
+    plt.close()
 
-# Manim scene to display the analysis plot
-class DifferencePlotScene(Scene):
-    def construct(self):
-        # Load the data
-        print("Hello")
-        json_file = 'calculation_results.json'  # Replace with your JSON file path
-        df = load_data(json_file)
-        print(json_file)
+    # Scatter plot comparing doubleResult and bigRealResult
+    plt.figure(figsize=(10, 6))
+    plt.scatter(df['doubleResult'], df['bigRealResult'], alpha=0.7, color='purple')
+    plt.title('Comparison of doubleResult vs. bigRealResult')
+    plt.xlabel('doubleResult')
+    plt.ylabel('bigRealResult')
+    plt.tight_layout()
+    plt.savefig('media/images/scatter_comparison.png')  # Updated path
+    plt.close()
 
-        # Analyze the differences and create the plot
-        df = analyze_differences(df)
-        output_image = 'difference_plot.png'
-        create_difference_plot(df, output_image)
+    # Line plot for step values over their index
+    plt.figure(figsize=(10, 6))
+    plt.plot(df.index, df['step_dValue'], marker='o', label='dValue', color='blue')
+    plt.plot(df.index, df['step_bdValue'], marker='x', label='bdValue', color='green')
+    plt.title('dValue and bdValue over Steps')
+    plt.xlabel('Step Index')
+    plt.ylabel('Value')
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig('media/images/line_plot_values.png')  # Updated path
 
-        # Load the image into a Manim scene
-        plot_image = ImageMobject(output_image)
-        plot_image.scale(2)  # Scale the image for better visibility
+    print("Plots saved in media/images as step_difference_plot.png, histogram_values.png, scatter_comparison.png, line_plot_values.png")
 
-        # Display the image on the screen
-        self.play(FadeIn(plot_image))
-        self.wait(3)
-        self.play(FadeOut(plot_image))
 
-        # Display the calculated overall differences as text
-        for index, row in df.iterrows():
-            text = Text(
-                f"Overall difference for step {index}: {row['overall_difference']:.10f}",
-                font_size=24
-            )
-            self.play(Write(text))
-            self.wait(2)
-            self.play(FadeOut(text))
+
+# Main function to run the analysis
+if __name__ == "__main__":
+    json_file = 'calc.json'  # Replace with your JSON file path
+    df = load_data(json_file)
+    create_statistical_graphics(df)
