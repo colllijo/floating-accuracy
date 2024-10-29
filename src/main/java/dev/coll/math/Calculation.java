@@ -93,7 +93,7 @@ public class Calculation {
 
     // The result is the only remaining element in the
     // values stack
-    return new CalculationResult(doubleValues.pop().toString(), bigRealValues.pop().bigDecimalValue().toString());
+    return new CalculationResult(doubleValues.pop().toString(), bigRealValues.pop().bigDecimalValue().toString(), steps.getLast().difference());
   }
 
   private void addStep(Double dValue, BigReal brValue) {
