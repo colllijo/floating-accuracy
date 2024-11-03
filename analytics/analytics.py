@@ -1,86 +1,102 @@
+import sys
 import pandas as pd
 import json
 import matplotlib.pyplot as plt
 
-
-# Load the JSON file into a Pandas DataFrame
-def load_data(json_file):
-    with open(json_file, 'r') as file:
+def load_json(json_file):
+    with(open(json_file, 'r')) as file:
         data = json.load(file)
+    return data
 
-    # Extract the relevant information into a DataFrame
-    results = []
+def normalize_calculation_data(data):
+    entries = []
     for entry in data:
-        result = entry.get('result', {})
-        double_result = float(result.get('doubleResult', 0))
-        big_real_result = float(result.get('bigRealResult', 0))
+        entries.append({
+            'dValue': entry['result']['doubleResult'],
+            'bValue': entry['result']['bigRealResult'],
+            'diff': entry['result']['resultDifference']
+        })
 
-        steps = entry.get('steps', [])
-        for step in steps:
-            results.append({
-                "calculation": entry.get('calculation', ''),
-                "doubleResult": double_result,
-                "bigRealResult": big_real_result,
-                "step_dValue": float(step.get('dValue', 0)),
-                "step_bdValue": float(step.get('bdValue', 0)),
-                "step_difference": float(step.get('difference', 0)),
-                "overall_difference": double_result - big_real_result,
-            })
+    df = pd.DataFrame(entries)
 
-    return pd.DataFrame(results)
+    df['diff'] = pd.to_numeric(df['diff'], errors='coerce')
+    df['dValue'] = pd.to_numeric(df['dValue'], errors='coerce')
+    df['bValue'] = pd.to_numeric(df['bValue'], errors='coerce')
 
+    return df
 
-# Function to create various plots
-def create_statistical_graphics(df):
-    # Bar plot of step differences
-    plt.figure(figsize=(10, 6))
-    df['step_difference'].plot(kind='bar', color='red', alpha=0.7)
-    plt.title('Step Differences Between dValue and bdValue')
-    plt.xlabel('Step Index')
-    plt.ylabel('Difference (E-17 scale)')
-    plt.tight_layout()
-    plt.savefig('media/images/step_difference_plot.png')  # Updated path
-    plt.close()
+# Calculation based analytics
 
-    # Histogram of step_dValue and step_bdValue
-    plt.figure(figsize=(10, 6))
-    plt.hist(df['step_dValue'], bins=10, alpha=0.5, label='dValue', color='blue')
-    plt.hist(df['step_bdValue'], bins=10, alpha=0.5, label='bdValue', color='green')
-    plt.title('Histogram of dValue and bdValue')
-    plt.xlabel('Value')
-    plt.ylabel('Frequency')
-    plt.legend()
-    plt.tight_layout()
-    plt.savefig('media/images/histogram_values.png')  # Updated path
-    plt.close()
+def plot_all_diferences(df):
+    # NOTE: Should this graph use absolute differences?
+    plt.plot(df['diff'].dropna())
+    plt.title('Alle Differenzen')
+    plt.xlabel('Index')
+    plt.ylabel('Differenz')
+    plt.grid(True)
+    plt.show()
 
-    # Scatter plot comparing doubleResult and bigRealResult
-    plt.figure(figsize=(10, 6))
-    plt.scatter(df['doubleResult'], df['bigRealResult'], alpha=0.7, color='purple')
-    plt.title('Comparison of doubleResult vs. bigRealResult')
-    plt.xlabel('doubleResult')
-    plt.ylabel('bigRealResult')
-    plt.tight_layout()
-    plt.savefig('media/images/scatter_comparison.png')  # Updated path
-    plt.close()
+def plot_histogram(df):
+    # NOTE: What is a good bin size?
+    plt.hist(df['diff'].dropna(), bins=42)
+    plt.title('Histogram der Differenzen')
+    plt.xlabel('Differenz')
+    plt.ylabel('Häufigkeit')
+    plt.grid(True)
+    plt.show()
 
-    # Line plot for step values over their index
-    plt.figure(figsize=(10, 6))
-    plt.plot(df.index, df['step_dValue'], marker='o', label='dValue', color='blue')
-    plt.plot(df.index, df['step_bdValue'], marker='x', label='bdValue', color='green')
-    plt.title('dValue and bdValue over Steps')
-    plt.xlabel('Step Index')
-    plt.ylabel('Value')
-    plt.legend()
-    plt.tight_layout()
-    plt.savefig('media/images/line_plot_values.png')  # Updated path
+def plot_scatter(df):
+    # NOTE: Does this graph make sense, and should it use log?
+    plt.scatter(df['bValue'].abs(), df['diff'].dropna().abs(), alpha=0.3)
+    plt.yscale('log')
+    plt.xscale('log')
+    plt.title('Scatterplot der Differenzen vs. Werte')
+    plt.xlabel('Tatsächlicher Wert')
+    plt.ylabel('Differenz (log)')
+    plt.grid(True)
+    plt.show()
 
-    print("Plots saved in media/images as step_difference_plot.png, histogram_values.png, scatter_comparison.png, line_plot_values.png")
+# Step based analytics
 
+def plot_difference_vs_steps(data):
+    big_df = pd.DataFrame()
+    for entry in data:
+        steps = [{ 'step': 0, 'difference': '0' }]
+        for index, step in enumerate(entry['steps'], start=1):
+            steps.append(
+                {
+                    'step': index,
+                    'difference': step['difference']
+                }
+            )
+        df = pd.DataFrame(steps)
 
+        df['step'] = pd.to_numeric(df['step'], errors='coerce')
+        df['difference'] = pd.to_numeric(df['difference'], errors='coerce')
 
-# Main function to run the analysis
+        big_df = pd.concat([big_df, df])
+
+        plt.scatter(df['step'], df['difference'].abs(), color='red', alpha=0.3)
+
+    big_df = big_df.groupby('step')['difference'].mean().reset_index()
+
+    plt.plot(big_df['step'], big_df['difference'], color='blue')
+    plt.title('Differenz vs. Schrittzahl')
+    plt.xlabel('Schrittzahl')
+    plt.ylabel('Differenz')
+    plt.grid(True)
+    plt.show()
+
 if __name__ == "__main__":
-    json_file = 'calc.json'  # Replace with your JSON file path
-    df = load_data(json_file)
-    create_statistical_graphics(df)
+    if (len(sys.argv) < 2):
+        print("Usage: python analytics.py <json_file>")
+        sys.exit(1)
+
+    json_data = load_json(sys.argv[1])
+    df = normalize_calculation_data(json_data)
+
+    # plot_histogram(df)
+    # plot_all_diferences(df)
+    # plot_scatter(df)
+    
+    plot_difference_vs_steps(json_data)
