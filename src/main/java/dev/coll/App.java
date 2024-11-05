@@ -14,7 +14,7 @@ import java.util.*;
 
 public class App {
   public static void main(String[] args) throws IOException {
-    final int SAMPLE_SIZE = 1;
+    final int SAMPLE_SIZE = 1000000;
     final String RESULT_DIRECTORY = "analytics";
 
     Map<String, String> expressions = Map.of(
@@ -30,9 +30,12 @@ public class App {
     );
     String[] keys = expressions.keySet().toArray(new String[0]);
 
-    List<CalculationDto> calculations = new ArrayList<>();
+    ObjectMapper mapper = new ObjectMapper();
 
     for (int i = 0; i < keys.length; i++) {
+      BufferedWriter writer = new BufferedWriter(new FileWriter(new File(new File(RESULT_DIRECTORY), keys[i] + "-result.json")));
+      writer.write("[");
+
       for (int j = 0; j < SAMPLE_SIZE; j++) {
         String[] values = Arrays.stream(params.get(keys[i]))
                 .map(CalculationParameter::getValueAsString)
@@ -40,14 +43,13 @@ public class App {
 
         Calculation calc = new Calculation(expressions.get(keys[i]));
         CalculationResult result = calc.evaluate(values);
+        CalculationDto dto = new CalculationDto(result, calc.getSteps(), values);
 
-        calculations.add(new CalculationDto(result, calc.getSteps(), values));
+        writer.write(mapper.writeValueAsString(dto));
+        if (j < SAMPLE_SIZE - 1) { writer.write(","); }
       }
 
-      ObjectMapper mapper = new ObjectMapper();
-      BufferedWriter writer = new BufferedWriter(new FileWriter(new File(new File(RESULT_DIRECTORY), keys[i] + "-result.json")));
-      writer.write(mapper.writeValueAsString(calculations));
-
+      writer.write("]");
       writer.close();
     }
   }
