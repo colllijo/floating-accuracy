@@ -22,9 +22,10 @@ public class App {
 
     Map<String, String> expressions = Map.of(
             "Kinematik", "({0} + {1}) * {2} / {3}",
-            "Gravitation", "(6.67430e-11 *({0} * {1}))/ (({2} +{3})*({2} +{3}))",
+            "Gravitationskraft", "(6.67430e-11 *({0} * {1}))/ (({2} +{3})*({2} +{3}))",
             "Colombo", "(8.9875517923e9 *({0} * {1}))/ ({2} *{2})"
     );
+    //https://www2.tntech.edu/leap/murdock/books/v4chap1.pdf help for colomb region
     Map<String, CalculationParameter[]> params = Map.of(
             "Kinematik", new CalculationParameter[] {
                     new CalculationParameter(-100, 100, false),
@@ -32,12 +33,16 @@ public class App {
                     new CalculationParameter(0, 200, false),
                     new CalculationParameter(-100, 100, true)
             },
-            "Gravitation",new CalculationParameter[] {
-                    new CalculationParameter(1e23, 1e28, false) //Min: Merkur masse /3 Max: Unter Braune Zwerg Masse 13 Jupitermasse
-                    ,
-                    new CalculationParameter(20.02),
-                    new CalculationParameter(0, 200, false),
-                    new CalculationParameter(-100, 100, true)
+            "Gravitationskraft",new CalculationParameter[] {
+                    new CalculationParameter(1e23, 1e28, false), //Min: Merkur masse /3 Max: Unter Braune Zwerg Masse 13 Jupitermasse
+                    new CalculationParameter(0, 1e28, false),//Min: 0 wie Menschen, Kuchen etc. Max: Unter Braune Zwerg Masse 13 Jupitermasse
+                    new CalculationParameter(0, 1e6, true),//Min: 0 wie Kugelradius etc. Max: Unter dem Radius vom Braune Zwerg
+                    new CalculationParameter(0, 1e16, false)//Min: 0 Abstand Gegenstände etc. Max: Lichtjahr Abstand
+            },
+            "Colombo",new CalculationParameter[] {
+                    new CalculationParameter(-1e28, 1e28, false), //Min: idk Max: idk
+                    new CalculationParameter(-1e28, 1e28, false),//Min: idk Max: idk
+                    new CalculationParameter(0, 1e-6, true),//Min: 0 wie Kugelradius etc. Max: Unter dem Radius vom Braune Zwerg
             }
     );
     String[] keys = expressions.keySet().toArray(new String[0]);
