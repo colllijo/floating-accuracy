@@ -27,19 +27,19 @@ public class App {
     );
     //https://www2.tntech.edu/leap/murdock/books/v4chap1.pdf help for colomb region
     Map<String, CalculationParameter[]> params = Map.of(
-            "Kinematik", new CalculationParameter[] {
+            "kinematics", new CalculationParameter[] {
                     new CalculationParameter(-100, 100, false),
                     new CalculationParameter(20.02),
                     new CalculationParameter(0, 200, false),
                     new CalculationParameter(-100, 100, true)
             },
-            "Gravitationskraft",new CalculationParameter[] {
+            "gravitational-force",new CalculationParameter[] {
                     new CalculationParameter(1e23, 1e28, false), //Min: Merkur masse /3 Max: Unter Braune Zwerg Masse 13 Jupitermasse
                     new CalculationParameter(0, 1e28, false),//Min: 0 wie Menschen, Kuchen etc. Max: Unter Braune Zwerg Masse 13 Jupitermasse
                     new CalculationParameter(0, 1e6, true),//Min: 0 wie Kugelradius etc. Max: Unter dem Radius vom Braune Zwerg
-                    new CalculationParameter(0, 1e16, false)//Min: 0 Abstand Gegenstände etc. Max: Lichtjahr Abstand
+                    new CalculationParameter(0, 1e16, false)//Min: 0 Abstandgegenstände etc. Max: Lichtjahr Abstand
             },
-            "Colombo",new CalculationParameter[] {
+            "coulomb-force",new CalculationParameter[] {
                     new CalculationParameter(-1e-19, 1e-19, false), //Min&Max: Typische Ladungen von Partikel
                     new CalculationParameter(-1e-19, 1e-19, false),//Min&Max: Typische Ladungen von Partikel
                       new CalculationParameter(1e-10, 1e3, true),//Min:ein Angstrom Max:1 Km
