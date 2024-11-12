@@ -13,61 +13,71 @@ import java.io.IOException;
 import java.util.*;
 
 public class App {
-  public static void main(String[] args) throws IOException {
-    final int SAMPLE_SIZE = 1000000;
-    final String RESULT_DIRECTORY = "analytics";
-    final double GRAVITATIONAL_CONSTANT = 6.67430e-11; // m³/kg·s²
-    final double COULOMB_CONSTANT = 8.9875517923e9; // N·m²/C²
-    // TODO: Add the Expression parameters
+    public static void main(String[] args) throws IOException {
+        final int SAMPLE_SIZE = 1000000;
+        final String RESULT_DIRECTORY = "analytics";
+        final String GRAVITATIONAL_CONSTANT = "6.67430e-11"; // m³/kg·s²
+        final String COULOMB_CONSTANT = "8.9875517923e9"; // N·m²/C²
 
-    Map<String, String> expressions = Map.of(
-            "Kinematik", "({0} + {1}) * {2} / {3}",
-            "Gravitationskraft", "(6.67430e-11 *({0} * {1}))/ (({2} +{3})*({2} +{3}))",
-            "Colombo", "(8.9875517923e9 *({0} * {1}))/ ({2} *{2})"
-    );
-    //https://www2.tntech.edu/leap/murdock/books/v4chap1.pdf help for colomb region
-    Map<String, CalculationParameter[]> params = Map.of(
-            "kinematics", new CalculationParameter[] {
-                    new CalculationParameter(-100, 100, false),
-                    new CalculationParameter(20.02),
-                    new CalculationParameter(0, 200, false),
-                    new CalculationParameter(-100, 100, true)
-            },
-            "gravitational-force",new CalculationParameter[] {
-                    new CalculationParameter(1e23, 1e28, false), //Min: Merkur masse /3 Max: Unter Braune Zwerg Masse 13 Jupitermasse
-                    new CalculationParameter(0, 1e28, false),//Min: 0 wie Menschen, Kuchen etc. Max: Unter Braune Zwerg Masse 13 Jupitermasse
-                    new CalculationParameter(0, 1e6, true),//Min: 0 wie Kugelradius etc. Max: Unter dem Radius vom Braune Zwerg
-                    new CalculationParameter(0, 1e16, false)//Min: 0 Abstandgegenstände etc. Max: Lichtjahr Abstand
-            },
-            "coulomb-force",new CalculationParameter[] {
-                    new CalculationParameter(-1e-19, 1e-19, false), //Min&Max: Typische Ladungen von Partikel
-                    new CalculationParameter(-1e-19, 1e-19, false),//Min&Max: Typische Ladungen von Partikel
-                      new CalculationParameter(1e-10, 1e3, true),//Min:ein Angstrom Max:1 Km
+      // Physikformel buch
+        Map<String, String> expressions = Map.of(
+                "kinematics", "{0} + {1} * {2} -(1/2)*{3}*({2}*{2})" // s=s0 + v *t-(1/2)*a*(t*t)
+                ,
+                "gravitational-force", "("+GRAVITATIONAL_CONSTANT+" *({0} * {1}))/ (({2} +{3})*({2} +{3}))" //FG= (G*(M*m))/((R+h)*(R+h)) | R= Erdradius & M = Erdmasse
+                ,
+                "coulomb-force", "("+COULOMB_CONSTANT+" *({0} * {1}))/ ({2} *{2})" //FGrav=( k *(q1*q2))/(r*r)
+        );// FG= (G*(M*m))/((R+h)*(R+h)) | R= Erdradius & M = Erdmasse
+        Map<String, CalculationParameter[]> params = Map.of(
+                // https://www.autoscout24.de/informieren/ratgeber/beste-autos/die-schnellsten-autos-der-welt/ 12.11.24
+                // https://www.carwow.de/automagazin/beste-autos/beste-autos-nach-autotypen/top-10-schnellste-autos-der-welt-2024 12.11.24
+                //https://www.adac-fahrtraining.de/tipps-fuer-lange-urlaubsfahrten 12.11.24
+                "kinematics", new CalculationParameter[]{
+                        new CalculationParameter(0, 500000, false), // ADAC empfiehlt nicht mehr als 500 Km zu fahren für eine lange Reise.
+                        new CalculationParameter(-150,150,false), // Es sollte 150 Meter pro Sekunde sein → 540 km/h schnellste zugelassen Auto
+                        new CalculationParameter(-100, 86400, false),// Es sollte ein Tag als Maximum
+                        new CalculationParameter(-16, 16, false), // Es sollte 16 Meter pro Sekunde im Quadrat sein -> stärkste beschleunigte zugelassen Auto
+                },
+                // https://de.wikipedia.org/wiki/Liste_der_Planeten_des_Sonnensystems 12.11.24
+                // https://de.wikipedia.org/wiki/Brauner_Zwerg 12.11.24
+                "gravitational-force", new CalculationParameter[]{
+                        new CalculationParameter(1e23, 1e28, false), //Min: Merkur masse /3 Max: Unter Braune Zwerg Masse 13 Jupitermasse
+                        new CalculationParameter(0, 1e28, false),//Min: 0 wie Menschen, Kuchen etc. Max: Unter Braune Zwerg Masse 13 Jupitermasse
+                        new CalculationParameter(0, 1e6, true),//Min: 0 wie Kugelradius etc. Max: Unter dem Radius vom Braune Zwerg
+                        new CalculationParameter(0, 1e16, false)//Min: 0 Abstandgegenstände etc. Max: Lichtjahr Abstand
+                },
+                // https://de.wikipedia.org/wiki/Elektrische_Ladung  12.11.24
+                // https://de.wikipedia.org/wiki/%C3%85ngstr%C3%B6m_(Einheit) 12.11.24
+                "coulomb-force", new CalculationParameter[]{
+                        new CalculationParameter(-1e-19, 1e-19, false), //Min&Max: Typische Ladungen von Partikel
+                        new CalculationParameter(-1e-19, 1e-19, false),//Min&Max: Typische Ladungen von Partikel
+                        new CalculationParameter(1e-10, 1, true),//Min: 1 Angstrom Max:1 Meter
+                }
+        );
+        String[] keys = expressions.keySet().toArray(new String[0]);
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        for (int i = 0; i < keys.length; i++) {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(new File(new File(RESULT_DIRECTORY), keys[i] + "-result.json")));
+            writer.write("[");
+
+            for (int j = 0; j < SAMPLE_SIZE; j++) {
+                String[] values = Arrays.stream(params.get(keys[i]))
+                        .map(CalculationParameter::getValueAsString)
+                        .toArray(String[]::new);
+
+                Calculation calc = new Calculation(expressions.get(keys[i]));
+                CalculationResult result = calc.evaluate(values);
+                CalculationDto dto = new CalculationDto(result, calc.getSteps(), values);
+
+                writer.write(mapper.writeValueAsString(dto));
+                if (j < SAMPLE_SIZE - 1) {
+                    writer.write(",");
+                }
             }
-    );
-    String[] keys = expressions.keySet().toArray(new String[0]);
 
-    ObjectMapper mapper = new ObjectMapper();
-
-    for (int i = 0; i < keys.length; i++) {
-      BufferedWriter writer = new BufferedWriter(new FileWriter(new File(new File(RESULT_DIRECTORY), keys[i] + "-result.json")));
-      writer.write("[");
-
-      for (int j = 0; j < SAMPLE_SIZE; j++) {
-        String[] values = Arrays.stream(params.get(keys[i]))
-                .map(CalculationParameter::getValueAsString)
-                .toArray(String[]::new);
-
-        Calculation calc = new Calculation(expressions.get(keys[i]));
-        CalculationResult result = calc.evaluate(values);
-        CalculationDto dto = new CalculationDto(result, calc.getSteps(), values);
-
-        writer.write(mapper.writeValueAsString(dto));
-        if (j < SAMPLE_SIZE - 1) { writer.write(","); }
-      }
-
-      writer.write("]");
-      writer.close();
+            writer.write("]");
+            writer.close();
+        }
     }
-  }
 }
