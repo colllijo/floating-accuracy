@@ -40,9 +40,9 @@ public class App {
                     new CalculationParameter(0, 1e16, false)//Min: 0 Abstand Gegenstände etc. Max: Lichtjahr Abstand
             },
             "Colombo",new CalculationParameter[] {
-                    new CalculationParameter(-1e28, 1e28, false), //Min: idk Max: idk
-                    new CalculationParameter(-1e28, 1e28, false),//Min: idk Max: idk
-                    new CalculationParameter(0, 1e-6, true),//Min: 0 wie Kugelradius etc. Max: Unter dem Radius vom Braune Zwerg
+                    new CalculationParameter(-1e-19, 1e-19, false), //Min&Max: Typische Ladungen von Partikel
+                    new CalculationParameter(-1e-19, 1e-19, false),//Min&Max: Typische Ladungen von Partikel
+                      new CalculationParameter(1e-10, 1e3, true),//Min:ein Angstrom Max:1 Km
             }
     );
     String[] keys = expressions.keySet().toArray(new String[0]);
