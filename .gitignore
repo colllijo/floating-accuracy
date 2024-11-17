@@ -1,2 +1,6 @@
 # Build
 target/
+
+# Generated files
+analytics/*.json
+analytics/media/images/*

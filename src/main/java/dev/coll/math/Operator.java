@@ -1,9 +1,9 @@
 package dev.coll.math;
 
-import java.math.BigDecimal;
+import org.apache.commons.math3.util.BigReal;
 
 public enum Operator {
-  ADD, SUBTRACT, MULTIPLY, DIVIDE;
+  ADD, SUBTRACT, MULTIPLY, DIVIDE, POWER;
 
   public static Operator fromChar(char c) {
     switch (c) {
@@ -15,9 +15,20 @@ public enum Operator {
         return MULTIPLY;
       case '/':
         return DIVIDE;
+      case '^':
+        return POWER;
       default:
         return null;
     }
+  }
+
+  // Function to check if operator1 has higher precedence
+  // than operator2
+  public static boolean hasPrecedence(char operator1, char operator2) {
+    if (operator2 == '(' || operator2 == ')') return false;
+    if (fromChar(operator1) == POWER) return false;
+    return (fromChar(operator1) != MULTIPLY && fromChar(operator1) != DIVIDE)
+            || (fromChar(operator2) != ADD && fromChar(operator2) != SUBTRACT);
   }
 
   public double apply(double b, double a) {
@@ -30,12 +41,14 @@ public enum Operator {
         return a * b;
       case DIVIDE:
         return a / b;
+      case POWER:
+        return Math.pow(a, b);
       default:
         return 0;
     }
   }
 
-  public BigDecimal apply(BigDecimal b, BigDecimal a) {
+  public BigReal apply(BigReal b, BigReal a) {
     switch (this) {
       case ADD:
         return a.add(b);
@@ -45,8 +58,15 @@ public enum Operator {
         return a.multiply(b);
       case DIVIDE:
         return a.divide(b);
+      case POWER:
+        BigReal result = a;
+        int exponent = b.bigDecimalValue().intValueExact();
+        for (int i = 1; i < exponent; i++) {
+          result = result.multiply(a);
+        }
+        return result;
       default:
-        return BigDecimal.ZERO;
+        return BigReal.ZERO;
     }
   }
 }
