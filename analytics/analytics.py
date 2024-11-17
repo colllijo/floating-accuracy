@@ -34,7 +34,8 @@ def plot_all_diferences(df):
     plt.xlabel('Index')
     plt.ylabel('Differenz')
     plt.grid(True)
-    plt.show()
+    plt.savefig('media/images/all_differences.png')
+    plt.close()
 
 def plot_histogram(df):
     # NOTE: What is a good bin size?
@@ -43,40 +44,39 @@ def plot_histogram(df):
     plt.xlabel('Differenz')
     plt.ylabel('Häufigkeit')
     plt.grid(True)
-    plt.show()
+    plt.savefig('media/images/histogram.png')
+    plt.close()
 
 def plot_scatter(df):
-    # NOTE: Does this graph make sense, and should it use log?
     plt.scatter(df['bValue'].abs(), df['diff'].dropna().abs(), alpha=0.3)
     plt.yscale('log')
     plt.xscale('log')
     plt.title('Scatterplot der Differenzen vs. Werte')
-    plt.xlabel('Tatsächlicher Wert')
+    plt.xlabel('Tatsächlicher Wert (log)')
     plt.ylabel('Differenz (log)')
     plt.grid(True)
-    plt.show()
+    plt.savefig('media/images/scatter.png')
+    plt.close()
 
 # Step based analytics
 
 def plot_difference_vs_steps(data):
     big_df = pd.DataFrame()
+
+    all_steps = []
     for entry in data:
-        steps = [{ 'step': 0, 'difference': '0' }]
-        for index, step in enumerate(entry['steps'], start=1):
-            steps.append(
-                {
-                    'step': index,
-                    'difference': step['difference']
-                }
-            )
-        df = pd.DataFrame(steps)
+        steps = [{'step': 0, 'difference': '0'}]
+        steps.extend(
+            {'step': index, 'difference': step['difference']}
+            for index, step in enumerate(entry['steps'], start=1)
+        )
+        all_steps.extend(steps)
 
-        df['step'] = pd.to_numeric(df['step'], errors='coerce')
-        df['difference'] = pd.to_numeric(df['difference'], errors='coerce')
+    big_df = pd.DataFrame(all_steps)
+    big_df['step'] = pd.to_numeric(big_df['step'], errors='coerce')
+    big_df['difference'] = pd.to_numeric(big_df['difference'], errors='coerce')
 
-        big_df = pd.concat([big_df, df])
-
-        plt.scatter(df['step'], df['difference'].abs(), color='red', alpha=0.3)
+    plt.scatter(big_df['step'], big_df['difference'].abs(), color='red', alpha=0.3)
 
     big_df = big_df.groupby('step')['difference'].mean().reset_index()
 
@@ -85,7 +85,8 @@ def plot_difference_vs_steps(data):
     plt.xlabel('Schrittzahl')
     plt.ylabel('Differenz')
     plt.grid(True)
-    plt.show()
+    plt.savefig('media/images/difference_vs_steps.png')
+    plt.close()
 
 if __name__ == "__main__":
     if (len(sys.argv) < 2):
@@ -95,8 +96,8 @@ if __name__ == "__main__":
     json_data = load_json(sys.argv[1])
     df = normalize_calculation_data(json_data)
 
-    # plot_histogram(df)
-    # plot_all_diferences(df)
-    # plot_scatter(df)
-    
+    plot_histogram(df)
+    plot_all_diferences(df)
+    plot_scatter(df)
+
     plot_difference_vs_steps(json_data)

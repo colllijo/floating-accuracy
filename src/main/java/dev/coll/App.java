@@ -14,7 +14,7 @@ import java.util.*;
 
 public class App {
   public static void main(String[] args) throws IOException {
-    final int SAMPLE_SIZE = 1000000;
+    final int SAMPLE_SIZE = 1000;
     final String RESULT_DIRECTORY = "analytics";
     final double GRAVITATIONAL_CONSTANT = 6.67430e-11; // m³/kg·s²
     final double COULOMB_CONSTANT = 8.9875517923e9; // N·m²/C²
