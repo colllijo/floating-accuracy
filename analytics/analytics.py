@@ -77,14 +77,21 @@ def plot_difference_vs_steps(data):
     big_df['step'] = pd.to_numeric(big_df['step'], errors='coerce')
     big_df['difference'] = pd.to_numeric(big_df['difference'], errors='coerce')
 
+    # Filter non-positive values for log scale
+    big_df = big_df[big_df['difference'] > 0]
+
     plt.scatter(big_df['step'], big_df['difference'].abs(), color='red', alpha=0.3)
 
     big_df = big_df.groupby('step')['difference'].mean().reset_index()
 
     plt.plot(big_df['step'], big_df['difference'], color='blue')
+    print(big_df['difference'])
+    print(big_df['step'])
+    plt.yscale('log')
+    plt.xscale('linear')
     plt.title('Differenz vs. Schrittzahl')
     plt.xlabel('Schrittzahl')
-    plt.ylabel('Differenz')
+    plt.ylabel('Differenz (Log)')
     plt.grid(True)
     plt.savefig('media/images/difference_vs_steps.png')
     plt.close()
@@ -126,9 +133,10 @@ def plot_percentage_difference_line(df):
 
     # Plot percentage difference as a line plot
     # plt.figure(figsize=(10, 6))
-    plt.plot(df.index, df['percentage_diff'], linestyle='-', marker='', color='purple', alpha=0.8, label='Percentage Difference')
-    plt.axhline(df['percentage_diff'].mean(), color='red', linestyle='--', label=f'Average: {df["percentage_diff"].mean():.2f}%')
+    plt.plot(df.index, df['percentage_diff'], color='purple', label='Percentage Difference')
+    plt.axhline(df['percentage_diff'].dropna().mean(), color='red', linestyle='--', label=f'Average: {df["percentage_diff"].mean():.2f}%')
     plt.title('Percentage Difference Between bValue and dValue')
+    # plt.xscale('log')
     plt.xlabel('Index')
     plt.ylabel('Percentage Difference (%)')
     plt.legend()
@@ -168,7 +176,7 @@ if __name__ == "__main__":
     plot_scatter(df)
     # lot_percentage_difference(df)
     # plot_percentage_difference_line(df)
-    plot_percentage_histogram(df)
-    plot_scatter_with_percentage(df)
-    # plot_difference_vs_steps(json_data)
+    #plot_percentage_histogram(df)
+    #plot_scatter_with_percentage(df)
+    plot_difference_vs_steps(json_data)
     print("end quit")
