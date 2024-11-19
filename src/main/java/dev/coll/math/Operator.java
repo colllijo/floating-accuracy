@@ -31,7 +31,7 @@ public enum Operator {
             || (fromChar(operator2) != ADD && fromChar(operator2) != SUBTRACT);
   }
 
-  public double apply(double b, double a) {
+  public float apply(float b, float a) {
     switch (this) {
       case ADD:
         return a + b;
@@ -42,7 +42,7 @@ public enum Operator {
       case DIVIDE:
         return a / b;
       case POWER:
-        return Math.pow(a, b);
+        return (float) Math.pow(a, b);
       default:
         return 0;
     }

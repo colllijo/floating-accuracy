@@ -24,7 +24,7 @@ public class Calculation {
   public CalculationResult evaluate(String[] values) {
     char[] tokens = MessageFormat.format(expression, (Object[]) values).toCharArray();
 
-    Stack<Double> doubleValues = new Stack<>();
+    Stack<Float> floatValues = new Stack<>();
     Stack<BigReal> bigRealValues = new Stack<>();
     Stack<Character> operators = new Stack<>();
 
@@ -40,7 +40,7 @@ public class Calculation {
           i++;
         } while (i < tokens.length && (Character.isDigit(tokens[i]) || tokens[i] == '.'));
 
-        doubleValues.push(Double.parseDouble(value.toString()));
+        floatValues.push(Float.parseFloat(value.toString()));
         bigRealValues.push(new BigReal(value.toString()));
 
         i--;
@@ -51,12 +51,12 @@ public class Calculation {
           char operator = operators.pop();
 
           try {
-              doubleValues.push(Operator.fromChar(operator).apply(doubleValues.pop(), doubleValues.pop()));
+              floatValues.push(Operator.fromChar(operator).apply(floatValues.pop(), floatValues.pop()));
               bigRealValues.push(Operator.fromChar(operator).apply(bigRealValues.pop(), bigRealValues.pop()));
           } catch (NullPointerException e) {
               System.err.println("Character '" + operator + "' is not a valid operator.");
           }
-          addStep(doubleValues.peek(), bigRealValues.peek());
+          addStep(floatValues.peek(), bigRealValues.peek());
         }
 
         operators.pop();
@@ -66,12 +66,12 @@ public class Calculation {
           char operator = operators.pop();
 
           try {
-              doubleValues.push(Operator.fromChar(operator).apply(doubleValues.pop(), doubleValues.pop()));
+              floatValues.push(Operator.fromChar(operator).apply(floatValues.pop(), floatValues.pop()));
               bigRealValues.push(Operator.fromChar(operator).apply(bigRealValues.pop(), bigRealValues.pop()));
           } catch (NullPointerException e) {
               System.err.println("Character '" + operator + "' is not a valid operator.");
           }
-          addStep(doubleValues.peek(), bigRealValues.peek());
+          addStep(floatValues.peek(), bigRealValues.peek());
         }
 
         operators.push(tokens[i]);
@@ -83,20 +83,20 @@ public class Calculation {
       char operator = operators.pop();
 
       try {
-          doubleValues.push(Operator.fromChar(operator).apply(doubleValues.pop(), doubleValues.pop()));
+          floatValues.push(Operator.fromChar(operator).apply(floatValues.pop(), floatValues.pop()));
           bigRealValues.push(Operator.fromChar(operator).apply(bigRealValues.pop(), bigRealValues.pop()));
       } catch (NullPointerException e) {
           System.err.println("Character '" + operator + "' is not a valid operator.");
       }
-      addStep(doubleValues.peek(), bigRealValues.peek());
+      addStep(floatValues.peek(), bigRealValues.peek());
     }
 
     // The result is the only remaining element in the
     // values stack
-    return new CalculationResult(doubleValues.pop().toString(), bigRealValues.pop().bigDecimalValue().toString(), steps.getLast().difference());
+    return new CalculationResult(floatValues.pop().toString(), bigRealValues.pop().bigDecimalValue().toString(), steps.getLast().difference());
   }
 
-  private void addStep(Double dValue, BigReal brValue) {
+  private void addStep(Float dValue, BigReal brValue) {
     BigReal difference = brValue.subtract(new BigReal(dValue));
 
     steps.add(new CalculationStep(dValue.toString(), brValue.bigDecimalValue().toString(), difference.bigDecimalValue().toString()));
