@@ -1,18 +1,18 @@
 package dev.coll.math;
 
 public class CalculationResult {
-  private String doubleResult;
+  private String floatResult;
   private String bigDecimalResult;
   private String resultDifference;
 
-  public CalculationResult(String doubleResult, String bigDecimalResult, String resultDifference) {
-    this.doubleResult = doubleResult;
+  public CalculationResult(String floatResult, String bigDecimalResult, String resultDifference) {
+    this.floatResult = floatResult;
     this.bigDecimalResult = bigDecimalResult;
     this.resultDifference = resultDifference;
   }
 
-  public String getDoubleResult() {
-    return doubleResult;
+  public String getFloatResult() {
+    return floatResult;
   }
 
   public String getBigRealResult() {

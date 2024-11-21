@@ -16,8 +16,8 @@ public class App {
   public static void main(String[] args) throws IOException {
     final int SAMPLE_SIZE = 1000;
     final String RESULT_DIRECTORY = "analytics";
-    final double GRAVITATIONAL_CONSTANT = 6.67430e-11; // m³/kg·s²
-    final double COULOMB_CONSTANT = 8.9875517923e9; // N·m²/C²
+    final float GRAVITATIONAL_CONSTANT = 6.67430e-11f; // m³/kg·s²
+    final float COULOMB_CONSTANT = 8.9875517923e9f; // N·m²/C²
 
     Map<String, String> expressions = Map.of(
         "kinematics", "{0} + {1} * {2} -(1/2) * {3} * ({2} * {2})", // s=s0+v*t-(1/2)*a*(t*t)
@@ -30,27 +30,27 @@ public class App {
         // https://www.adac-fahrtraining.de/tipps-fuer-lange-urlaubsfahrten 12.11.24
         // https://de.wikipedia.org/wiki/Supersportwagen 12.11.24
         "kinematics", new CalculationParameter[] {
-            new CalculationParameter(0, 500000, false), // ADAC empfiehlt nicht mehr als 500 Km zu fahren für eine lange Reise.
-            new CalculationParameter(-130, 130, false), // Es sollte 130 Meter pro Sekunde sein → 475 km/h schnellste zugelassen Auto
-            new CalculationParameter(0, 8640, false), // Es sollte ein Tag als Maximum
-            new CalculationParameter(-15, 15, false), // Es sollte 15 Meter pro Sekunde im Quadrat sein -> stärkste beschleunigte zugelassen Auto
+            new CalculationParameter(0f, 500000f, false), // ADAC empfiehlt nicht mehr als 500 Km zu fahren für eine lange Reise.
+            new CalculationParameter(-130f, 130f, false), // Es sollte 130 Meter pro Sekunde sein → 475 km/h schnellste zugelassen Auto
+            new CalculationParameter(0f, 8640f, false), // Es sollte ein Tag als Maximum
+            new CalculationParameter(-15f, 15f, false), // Es sollte 15 Meter pro Sekunde im Quadrat sein -> stärkste beschleunigte zugelassen Auto
         },
         // https://de.wikipedia.org/wiki/Liste_der_Planeten_des_Sonnensystems 12.11.24
         // https://de.wikipedia.org/wiki/Brauner_Zwerg 12.11.24
         "gravitational-force", new CalculationParameter[] {
             new CalculationParameter(GRAVITATIONAL_CONSTANT),
-            new CalculationParameter(1e23, 1e28, false), // Min: Merkur masse /3 Max: Unter Braune Zwerg Masse 13 Jupitermasse
-            new CalculationParameter(0, 1e28, false), // Min: 0 wie Menschen, Kuchen etc. Max: Unter Braune Zwerg Masse 13 Jupitermasse
-            new CalculationParameter(0, 1e6, true), // Min: 0 wie Kugelradius etc. Max: Unter dem Radius vom Braune Zwerg
-            new CalculationParameter(0, 1e16, false)// Min: 0 Abstandgegenstände etc. Max: Lichtjahr Abstand
+            new CalculationParameter(1e23f, 1e28f, false), // Min: Merkur masse /3 Max: Unter Braune Zwerg Masse 13 Jupitermasse
+            new CalculationParameter(0f, 1e28f, false), // Min: 0 wie Menschen, Kuchen etc. Max: Unter Braune Zwerg Masse 13 Jupitermasse
+            new CalculationParameter(0f, 1e6f, true), // Min: 0 wie Kugelradius etc. Max: Unter dem Radius vom Braune Zwerg
+            new CalculationParameter(0f, 1e16f, false)// Min: 0 Abstandgegenstände etc. Max: Lichtjahr Abstand
         },
         // https://de.wikipedia.org/wiki/Elektrische_Ladung 12.11.24
         // https://de.wikipedia.org/wiki/%C3%85ngstr%C3%B6m_(Einheit) 12.11.24
         "coulomb-force", new CalculationParameter[] {
             new CalculationParameter(COULOMB_CONSTANT),
-            new CalculationParameter(-1e-19, 1e-19, false), // Min&Max: Typische Ladungen von Partikel
-            new CalculationParameter(-1e-19, 1e-19, false), // Min&Max: Typische Ladungen von Partikel
-            new CalculationParameter(1e-10, 1, true),// Min: 1 Angstrom Max:1 Meter
+            new CalculationParameter(-1e-19f, 1e-19f, false), // Min&Max: Typische Ladungen von Partikel
+            new CalculationParameter(-1e-19f, 1e-19f, false), // Min&Max: Typische Ladungen von Partikel
+            new CalculationParameter(1e-10f, 1f, true),// Min: 1 Angstrom Max:1 Meter
         });
 
     String[] keys = expressions.keySet().toArray(new String[0]);

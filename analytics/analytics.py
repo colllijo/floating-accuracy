@@ -12,7 +12,7 @@ def normalize_calculation_data(data):
     entries = []
     for entry in data:
         entries.append({
-            'dValue': entry['result']['doubleResult'],
+            'fValue': entry['result']['floatResult'],
             'bValue': entry['result']['bigRealResult'],
             'diff': entry['result']['resultDifference']
         })
@@ -20,7 +20,7 @@ def normalize_calculation_data(data):
     df = pd.DataFrame(entries)
 
     df['diff'] = pd.to_numeric(df['diff'], errors='coerce')
-    df['dValue'] = pd.to_numeric(df['dValue'], errors='coerce')
+    df['fValue'] = pd.to_numeric(df['fValue'], errors='coerce')
     df['bValue'] = pd.to_numeric(df['bValue'], errors='coerce')
 
     return df
