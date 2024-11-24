@@ -4,12 +4,12 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class CalculationParameter {
   private final ParamType type;
-  private final float maxValue;
-  private final float minValue;
-  private final float value;
+  private final double maxValue;
+  private final double minValue;
+  private final double value;
   private final boolean nonZero;
 
-  public CalculationParameter(float minValue, float maxValue, boolean nonZero) {
+  public CalculationParameter(double minValue, double maxValue, boolean nonZero) {
     this.type = ParamType.RANDOMIZED;
     this.value = 0;
     this.maxValue = maxValue;
@@ -17,7 +17,7 @@ public class CalculationParameter {
     this.nonZero = nonZero;
   }
 
-  public CalculationParameter(float value) {
+  public CalculationParameter(double value) {
     this.type = ParamType.CONSTANT;
     this.value = value;
     this.maxValue = 0;
@@ -29,9 +29,9 @@ public class CalculationParameter {
     if (type == ParamType.CONSTANT) return String.valueOf(value);
 
     ThreadLocalRandom threadRandom = ThreadLocalRandom.current();
-    float result = threadRandom.nextFloat(minValue, maxValue);
+    double result = threadRandom.nextDouble(minValue, maxValue);
     while (result == 0 && nonZero) {
-      result = threadRandom.nextFloat(minValue, maxValue);
+      result = threadRandom.nextDouble(minValue, maxValue);
     }
     return String.valueOf(result);
   }
