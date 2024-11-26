@@ -1,6 +1,8 @@
 package dev.coll.math;
 
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.UUID;
+import java.util.random.RandomGenerator;
+import java.util.random.RandomGeneratorFactory;
 
 public class CalculationParameter {
   private final ParamType type;
@@ -28,11 +30,30 @@ public class CalculationParameter {
   public String getValueAsString() {
     if (type == ParamType.CONSTANT) return String.valueOf(value);
 
-    ThreadLocalRandom threadRandom = ThreadLocalRandom.current();
-    double result = threadRandom.nextDouble(minValue, maxValue);
-    while (result == 0 && nonZero) {
-      result = threadRandom.nextDouble(minValue, maxValue);
+    UUID uuid = UUID.randomUUID();
+    long seed = uuid.getMostSignificantBits() ^ uuid.getLeastSignificantBits();
+    RandomGenerator randomGenerator = RandomGeneratorFactory.of("L64X128MixRandom").create(seed);
+
+    double result;
+    if (maxValue > 1e6) {
+      // Use logarithmic scale for large bounds, so that the distribution is more uniform
+      double logMin = Math.log(minValue + 1); // +1 to avoid log(0)
+      double logMax = Math.log(maxValue + 1);
+      result = Math.exp(randomGenerator.nextDouble(logMin, logMax)) - 1;
+    } else {
+      result = randomGenerator.nextDouble(minValue, maxValue);
     }
+
+    while (result == 0 && nonZero) {
+      if (maxValue > 1e6) {
+        double logMin = Math.log(minValue + 1);
+        double logMax = Math.log(maxValue + 1);
+        result = Math.exp(randomGenerator.nextDouble(logMin, logMax)) - 1;
+      } else {
+        result = randomGenerator.nextDouble(minValue, maxValue);
+      }
+    }
+
     return String.valueOf(result);
   }
 }
