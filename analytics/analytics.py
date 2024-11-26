@@ -1,3 +1,4 @@
+import os
 import sys
 import pandas as pd
 import json
@@ -22,33 +23,31 @@ def normalize_calculation_data(data):
     df['diff'] = pd.to_numeric(df['diff'], errors='coerce')
     df['dValue'] = pd.to_numeric(df['dValue'], errors='coerce')
     df['bValue'] = pd.to_numeric(df['bValue'], errors='coerce')
+    df['percentage_diff'] = (df['diff'] / df['bValue']) * 100
+    df['percentage_diff_abs'] = df['percentage_diff'].abs()
 
     return df
 
 # Calculation based analytics
-
 def plot_all_diferences(df):
-    # NOTE: Should this graph use absolute differences?
     plt.plot(df['diff'].dropna())
     plt.title('Alle Differenzen')
     plt.xlabel('Index')
     plt.ylabel('Differenz')
     plt.grid(True)
-    plt.savefig('media/images/all_differences.png')
+    plt.savefig(f'media/{data_name}/all_differences.png')
     plt.close()
 
 def plot_histogram(df):
-    # NOTE: What is a good bin size?
-    plt.hist(df['diff'].dropna(), bins=42)
+    plt.hist(df['diff'].dropna())
     plt.title('Histogram der Differenzen')
     plt.xlabel('Differenz')
     plt.ylabel('Häufigkeit')
     plt.grid(True)
-    plt.savefig('media/images/histogram.png')
+    plt.savefig(f'media/{data_name}/histogram.png')
     plt.close()
 
 def plot_scatter(df):
-    # NOTE: Does this graph make sense, and should it use log?
     plt.scatter(df['bValue'].abs(), df['diff'].dropna().abs(), alpha=0.3)
     plt.yscale('log')
     plt.xscale('log')
@@ -56,11 +55,10 @@ def plot_scatter(df):
     plt.xlabel('Tatsächlicher Wert (log)')
     plt.ylabel('Differenz (log)')
     plt.grid(True)
-    plt.savefig('media/images/scatter.png')
+    plt.savefig(f'media/{data_name}/scatter.png')
     plt.close()
 
 # Step based analytics
-
 def plot_difference_vs_steps(data):
     big_df = pd.DataFrame()
 
@@ -85,98 +83,51 @@ def plot_difference_vs_steps(data):
     big_df = big_df.groupby('step')['difference'].mean().reset_index()
 
     plt.plot(big_df['step'], big_df['difference'], color='blue')
-    print(big_df['difference'])
-    print(big_df['step'])
     plt.yscale('log')
     plt.xscale('linear')
     plt.title('Differenz vs. Schrittzahl')
     plt.xlabel('Schrittzahl')
     plt.ylabel('Differenz (Log)')
     plt.grid(True)
-    plt.savefig('media/images/difference_vs_steps.png')
+    plt.savefig(f'media/{data_name}/difference_vs_steps.png')
     plt.close()
 
-# New Method: Percentage Difference
-def plot_percentage_difference(df):
-    # Calculate percentage difference
-    df['percentage_diff'] = (df['diff'].dropna().abs() / (df['bValue'].dropna().abs())) * 100
-
-    # Plot percentage difference
-    # plt.figure(figsize=(10, 6))
-    plt.plot(df['percentage_diff'],color='blue')
-    plt.title('Percentage Difference Between bValue and dValue')
-    plt.xlabel('Index')
-    plt.ylabel('Percentage Difference (%)')
-    plt.grid(True)
-    plt.savefig('media/images/percentage_difference.png')
-    plt.close()
-
-def plot_percentage_histogram(df):
-    # Calculate percentage difference
-    df['percentage_diff'] = (df['diff'] / df['bValue']) * 100
-
-    # Calculate total count of non-NaN values
-    total_count = df['percentage_diff'].dropna().count()
-
-    plt.hist(df['percentage_diff'].dropna(), bins=1000)
-    plt.title(f'Histogram der Differenzen (Totaleanzahl: {total_count})')
-    plt.xlabel('Differenz')
-    plt.ylabel('Häufigkeit')
-    plt.grid(True)
-    plt.savefig('media/images/histogram.png')
-    plt.close()
-
-# New Method: Line Plot for Percentage Difference
+# Percentage based analytics
 def plot_percentage_difference_line(df):
-    # Calculate percentage difference
-    df['percentage_diff'] = (df['diff'].dropna().abs() / (df['bValue'].dropna().abs())) * 100
-
-    # Plot percentage difference as a line plot
-    # plt.figure(figsize=(10, 6))
-    plt.plot(df.index, df['percentage_diff'], color='purple', label='Percentage Difference')
-    plt.axhline(df['percentage_diff'].dropna().mean(), color='red', linestyle='--', label=f'Average: {df["percentage_diff"].mean():.2f}%')
+    plt.plot(df.index, df['percentage_diff_abs'], label='Percentage Difference')
+    plt.axhline(df['percentage_diff_abs'].dropna().mean(), color='red', linestyle='--', label=f'Average: {df["percentage_diff_abs"].dropna().mean()}%')
     plt.title('Percentage Difference Between bValue and dValue')
-    # plt.xscale('log')
     plt.xlabel('Index')
     plt.ylabel('Percentage Difference (%)')
     plt.legend()
     plt.grid(True)
     plt.tight_layout()
-    plt.savefig('media/images/percentage_difference_line.png')
+    plt.savefig(f'media/{data_name}/percentage_difference_line.png')
     plt.close()
 
-
-def plot_scatter_with_percentage(df):
-    # Calculate percentage difference
-    df['percentage_diff'] = (df['diff'].abs() / df['bValue'].abs()) * 100
-
-    # Create scatter plot with log scales
-    plt.scatter(df['bValue'].abs(), df['percentage_diff'], alpha=0.3, color='blue')
-    plt.xscale('log')  # Log scale for bValue
-    plt.title('Scatterplot: bValue vs. Percentage Difference')
-    plt.xlabel('bValue (log)')
-    plt.ylabel('Percentage Difference (%)')
+def plot_percentage_histogram(df):
+    plt.hist(df['percentage_diff'].dropna(), bins=1000)
+    plt.title('Histogram der prozentualen Differenzen')
+    plt.xlabel('Differenz')
+    plt.ylabel('Häufigkeit')
     plt.grid(True)
-
-    # Save plot
-    plt.savefig('media/images/scatter_with_percentage.png')
+    plt.savefig(f'media/{data_name}/percentage_histogram.png')
     plt.close()
-
 
 if __name__ == "__main__":
     if (len(sys.argv) < 2):
         print("Usage: python analytics.py <json_file>")
         sys.exit(1)
 
+    data_name = '-'.join(sys.argv[1].split('-')[:-1])
     json_data = load_json(sys.argv[1])
     df = normalize_calculation_data(json_data)
 
-    # plot_histogram(df)
-    # plot_all_diferences(df)
+    os.makedirs(f'media/{data_name}', exist_ok=True)
+
+    plot_histogram(df)
+    plot_all_diferences(df)
     plot_scatter(df)
-    # lot_percentage_difference(df)
-    # plot_percentage_difference_line(df)
-    #plot_percentage_histogram(df)
-    #plot_scatter_with_percentage(df)
+    plot_percentage_difference_line(df)
+    plot_percentage_histogram(df)
     plot_difference_vs_steps(json_data)
-    print("end quit")
