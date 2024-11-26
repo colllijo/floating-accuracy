@@ -3,4 +3,4 @@ target/
 
 # Generated files
 analytics/*.json
-analytics/media/images/*
+analytics/media/*
