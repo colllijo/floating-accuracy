@@ -40,7 +40,7 @@ def plot_all_diferences(df):
 
 def plot_histogram(df):
     plt.hist(df['diff'].dropna())
-    plt.title('Histogram der Differenzen')
+    plt.title('Histogramm der Differenzen')
     plt.xlabel('Differenz')
     plt.ylabel('Häufigkeit')
     plt.grid(True)
@@ -51,7 +51,7 @@ def plot_scatter(df):
     plt.scatter(df['bValue'].abs(), df['diff'].dropna().abs(), alpha=0.3)
     plt.yscale('log')
     plt.xscale('log')
-    plt.title('Scatterplot der Differenzen vs. Werte')
+    plt.title('Streudiagramm der Differenzen vs. Werte')
     plt.xlabel('Tatsächlicher Wert (log)')
     plt.ylabel('Differenz (log)')
     plt.grid(True)
@@ -94,11 +94,11 @@ def plot_difference_vs_steps(data):
 
 # Percentage based analytics
 def plot_percentage_difference_line(df):
-    plt.plot(df.index, df['percentage_diff_abs'], label='Percentage Difference')
+    plt.plot(df.index, df['percentage_diff_abs'], label='Prozentsatz Differenz')
     plt.axhline(df['percentage_diff_abs'].dropna().mean(), color='red', linestyle='--', label=f'Average: {df["percentage_diff_abs"].dropna().mean()}%')
-    plt.title('Percentage Difference Between bValue and dValue')
+    plt.title('Prozentsatz Differenz zwischen realen Werten and tatsächlichen Werten')
     plt.xlabel('Index')
-    plt.ylabel('Percentage Difference (%)')
+    plt.ylabel('Prozentsatz Differenz (%)')
     plt.legend()
     plt.grid(True)
     plt.tight_layout()
