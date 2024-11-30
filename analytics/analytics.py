@@ -107,7 +107,7 @@ def plot_percentage_difference_line(df):
 
 def plot_percentage_histogram(df):
     plt.hist(df['percentage_diff'].dropna(), bins=1000)
-    plt.title('Histogram der prozentualen Differenzen')
+    plt.title('Histogramm der prozentualen Differenzen')
     plt.xlabel('Differenz')
     plt.ylabel('Häufigkeit')
     plt.grid(True)
