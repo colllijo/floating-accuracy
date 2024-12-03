@@ -89,10 +89,12 @@ def plot_difference_vs_steps(data):
         )
         all_steps.extend(steps)
 
+    offset = 1e-16
+
     big_df = pd.DataFrame(all_steps)
     big_df['step'] = pd.to_numeric(big_df['step'], errors='coerce')
     big_df['difference'] = pd.to_numeric(big_df['difference'], errors='coerce')
-    big_df['difference'] = big_df['difference'].abs()
+    big_df['difference'] = big_df['difference'].abs() + offset
 
     plt.scatter(big_df['step'], big_df['difference'], color='red', alpha=0.3)
 
@@ -102,6 +104,7 @@ def plot_difference_vs_steps(data):
     plt.title('Differenz vs. Schrittzahl')
     plt.xlabel('Schrittzahl')
     plt.ylabel('Differenz (Log)')
+    plt.yscale('log')
     plt.grid(True)
     plt.savefig(f'media/{data_name}/difference_vs_steps.png')
     plt.close()
