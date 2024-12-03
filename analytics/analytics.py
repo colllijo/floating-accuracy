@@ -3,6 +3,7 @@ import sys
 import pandas as pd
 import json
 import matplotlib.pyplot as plt
+from matplotlib.ticker import MaxNLocator
 
 def load_json(json_file):
     with(open(json_file, 'r')) as file:
@@ -39,10 +40,27 @@ def plot_all_diferences(df):
     plt.close()
 
 def plot_histogram(df):
-    plt.hist(df['diff'].dropna())
+    counts, bins, patches = plt.hist(df['diff'].dropna(), bins=42)
+    clip_limit = 100
+
+    # Add an arrow for bins exceeding the limit
+    for count, patch in zip(counts, patches):
+        if count > clip_limit:
+            # Get bin position and width
+            x = patch.get_x() + patch.get_width() / 2
+            y = clip_limit
+
+            # Add an arrow indicating the excess
+            plt.annotate(
+                '↑', xy=(x, y), xytext=(x, y - 5),  # Arrow starts just below the limit
+                ha='center', va='bottom', color='red', fontsize=14,
+                arrowprops=dict(facecolor='red', arrowstyle='wedge')
+            )
+
     plt.title('Histogramm der Differenzen')
     plt.xlabel('Differenz')
     plt.ylabel('Häufigkeit')
+    plt.ylim(0, clip_limit)
     plt.grid(True)
     plt.savefig(f'media/{data_name}/histogram.png')
     plt.close()
@@ -71,34 +89,33 @@ def plot_difference_vs_steps(data):
         )
         all_steps.extend(steps)
 
+    offset = 1e-16
+
     big_df = pd.DataFrame(all_steps)
     big_df['step'] = pd.to_numeric(big_df['step'], errors='coerce')
     big_df['difference'] = pd.to_numeric(big_df['difference'], errors='coerce')
+    big_df['difference'] = big_df['difference'].abs() + offset
 
-    # Filter non-positive values for log scale
-    big_df = big_df[big_df['difference'] > 0]
-
-    plt.scatter(big_df['step'], big_df['difference'].abs(), color='red', alpha=0.3)
+    plt.scatter(big_df['step'], big_df['difference'], color='red', alpha=0.3)
 
     big_df = big_df.groupby('step')['difference'].mean().reset_index()
 
     plt.plot(big_df['step'], big_df['difference'], color='blue')
-    plt.yscale('log')
-    plt.xscale('linear')
     plt.title('Differenz vs. Schrittzahl')
     plt.xlabel('Schrittzahl')
     plt.ylabel('Differenz (Log)')
+    plt.yscale('log')
     plt.grid(True)
     plt.savefig(f'media/{data_name}/difference_vs_steps.png')
     plt.close()
 
 # Percentage based analytics
 def plot_percentage_difference_line(df):
-    plt.plot(df.index, df['percentage_diff_abs'], label='Prozentsatz Differenz')
-    plt.axhline(df['percentage_diff_abs'].dropna().mean(), color='red', linestyle='--', label=f'Average: {df["percentage_diff_abs"].dropna().mean()}%')
-    plt.title('Prozentsatz Differenz zwischen realen Werten and tatsächlichen Werten')
+    plt.plot(df.index, df['percentage_diff_abs'], label='Percentage Difference')
+    plt.axhline(df['percentage_diff_abs'].dropna().mean(), color='red', linestyle='--', label=f'Average: {"{:.2e}".format(df["percentage_diff_abs"].dropna().mean())}%')
+    plt.title('Percentage Difference Between bValue and dValue')
     plt.xlabel('Index')
-    plt.ylabel('Prozentsatz Differenz (%)')
+    plt.ylabel('Percentage Difference (%)')
     plt.legend()
     plt.grid(True)
     plt.tight_layout()
@@ -106,10 +123,28 @@ def plot_percentage_difference_line(df):
     plt.close()
 
 def plot_percentage_histogram(df):
-    plt.hist(df['percentage_diff'].dropna(), bins=1000)
+    counts, bins, patches = plt.hist(df['percentage_diff'].dropna(), bins=42)
+    clip_limit = 100
+
+    # Add an arrow for bins exceeding the limit
+    for count, patch in zip(counts, patches):
+        if count > clip_limit:
+            # Get bin position and width
+            x = patch.get_x() + patch.get_width() / 2
+            y = clip_limit
+
+            # Add an arrow indicating the excess
+            plt.annotate(
+                '↑', xy=(x, y), xytext=(x, y - 5),  # Arrow starts just below the limit
+                ha='center', va='bottom', color='red', fontsize=14,
+                arrowprops=dict(facecolor='red', arrowstyle='wedge')
+            )
+
     plt.title('Histogramm der prozentualen Differenzen')
     plt.xlabel('Differenz')
     plt.ylabel('Häufigkeit')
+    plt.ylim(0, clip_limit)
+    plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
     plt.grid(True)
     plt.savefig(f'media/{data_name}/percentage_histogram.png')
     plt.close()
