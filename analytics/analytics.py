@@ -70,7 +70,7 @@ def plot_scatter(df):
     plt.yscale('log')
     plt.xscale('log')
     plt.title('Streudiagramm der Differenzen vs. Werte')
-    plt.xlabel('Tatsächlicher Wert (log)')
+    plt.xlabel('Erwartete Wert (log)')
     plt.ylabel('Differenz (log)')
     plt.grid(True)
     plt.savefig(f'media/{data_name}/scatter.png')
@@ -141,7 +141,7 @@ def plot_percentage_histogram(df):
             )
 
     plt.title('Histogramm der prozentualen Differenzen')
-    plt.xlabel('Differenz')
+    plt.xlabel('Differenz (%)')
     plt.ylabel('Häufigkeit')
     plt.ylim(0, clip_limit)
     plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
