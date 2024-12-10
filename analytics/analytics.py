@@ -70,7 +70,7 @@ def plot_scatter(df):
     plt.yscale('log')
     plt.xscale('log')
     plt.title('Streudiagramm der Differenzen vs. Werte')
-    plt.xlabel('Erwartete Wert (log)')
+    plt.xlabel('Erwarteter Wert (log)')
     plt.ylabel('Differenz (log)')
     plt.grid(True)
     plt.savefig(f'media/{data_name}/scatter.png')
@@ -96,15 +96,16 @@ def plot_difference_vs_steps(data):
     big_df['difference'] = pd.to_numeric(big_df['difference'], errors='coerce')
     big_df['difference'] = big_df['difference'].abs() + offset
 
-    plt.scatter(big_df['step'], big_df['difference'], color='red', alpha=0.3)
+    plt.scatter(big_df['step'], big_df['difference'], label='Datenpunkte',color='red', alpha=0.3)
 
     big_df = big_df.groupby('step')['difference'].mean().reset_index()
 
-    plt.plot(big_df['step'], big_df['difference'], color='blue')
+    plt.plot(big_df['step'], big_df['difference'],  color='blue',label='Durchschnitt')
     plt.title('Differenz vs. Schrittzahl')
     plt.xlabel('Schrittzahl')
     plt.ylabel('Differenz (Log)')
     plt.yscale('log')
+    plt.legend()
     plt.grid(True)
     plt.savefig(f'media/{data_name}/difference_vs_steps.png')
     plt.close()
