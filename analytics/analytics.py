@@ -113,9 +113,9 @@ def plot_difference_vs_steps(data):
 def plot_percentage_difference_line(df):
     plt.plot(df.index, df['percentage_diff_abs'], label='Percentage Difference')
     plt.axhline(df['percentage_diff_abs'].dropna().mean(), color='red', linestyle='--', label=f'Average: {"{:.2e}".format(df["percentage_diff_abs"].dropna().mean())}%')
-    plt.title('Percentage Difference Between bValue and dValue')
+    plt.title('Prozentsatz Differenz zwischen BigReal and double Wert')
     plt.xlabel('Index')
-    plt.ylabel('Percentage Difference (%)')
+    plt.ylabel('Prozentsatz Differenz (%)')
     plt.legend()
     plt.grid(True)
     plt.tight_layout()
