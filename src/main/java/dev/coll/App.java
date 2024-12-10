@@ -32,7 +32,7 @@ public class App {
         "kinematics", new CalculationParameter[] {
             new CalculationParameter(0, 500000, false), // ADAC empfiehlt nicht mehr als 500 Km zu fahren für eine lange Reise.
             new CalculationParameter(-130, 130, false), // Es sollte 130 Meter pro Sekunde sein → 475 km/h schnellste zugelassen Auto
-            new CalculationParameter(0, 8640, false), // Es sollte ein Tag als Maximum
+            new CalculationParameter(0, 86400, false), // Es sollte ein Tag als Maximum
             new CalculationParameter(-15, 15, false), // Es sollte 15 Meter pro Sekunde im Quadrat sein -> stärkste beschleunigte zugelassen Auto
         },
         // https://de.wikipedia.org/wiki/Liste_der_Planeten_des_Sonnensystems 12.11.24
