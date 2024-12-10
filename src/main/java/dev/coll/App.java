@@ -41,7 +41,7 @@ public class App {
             new CalculationParameter(GRAVITATIONAL_CONSTANT),
             new CalculationParameter(1e23, 1e28, false), // Min: Merkur masse /3 Max: Unter Braune Zwerg Masse 13 Jupitermasse
             new CalculationParameter(0, 1e28, false), // Min: 0 wie Menschen, Kuchen etc. Max: Unter Braune Zwerg Masse 13 Jupitermasse
-            new CalculationParameter(0, 1e6, true), // Min: 0 wie Kugelradius etc. Max: Unter dem Radius vom Braune Zwerg
+            new CalculationParameter(0, 1e8, true), // Min: 0 wie Kugelradius etc. Max: Unter dem Radius vom Braune Zwerg
             new CalculationParameter(0, 1e16, false)// Min: 0 Abstandgegenstände etc. Max: Lichtjahr Abstand
         },
         // https://de.wikipedia.org/wiki/Elektrische_Ladung 12.11.24
