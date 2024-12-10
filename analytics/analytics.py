@@ -89,7 +89,7 @@ def plot_difference_vs_steps(data):
         )
         all_steps.extend(steps)
 
-    offset = 1e-16
+    offset = 1e-70
 
     big_df = pd.DataFrame(all_steps)
     big_df['step'] = pd.to_numeric(big_df['step'], errors='coerce')
