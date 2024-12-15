@@ -32,7 +32,7 @@ public class App {
         "kinematics", new CalculationParameter[] {
             new CalculationParameter(0, 500000, false), // ADAC empfiehlt nicht mehr als 500 Km zu fahren für eine lange Reise.
             new CalculationParameter(-130, 130, false), // Es sollte 130 Meter pro Sekunde sein → 475 km/h schnellste zugelassen Auto
-            new CalculationParameter(0, 8640, false), // Es sollte ein Tag als Maximum
+            new CalculationParameter(0, 86400, false), // Es sollte ein Tag als Maximum
             new CalculationParameter(-15, 15, false), // Es sollte 15 Meter pro Sekunde im Quadrat sein -> stärkste beschleunigte zugelassen Auto
         },
         // https://de.wikipedia.org/wiki/Liste_der_Planeten_des_Sonnensystems 12.11.24
@@ -41,7 +41,7 @@ public class App {
             new CalculationParameter(GRAVITATIONAL_CONSTANT),
             new CalculationParameter(1e23, 1e28, false), // Min: Merkur masse /3 Max: Unter Braune Zwerg Masse 13 Jupitermasse
             new CalculationParameter(0, 1e28, false), // Min: 0 wie Menschen, Kuchen etc. Max: Unter Braune Zwerg Masse 13 Jupitermasse
-            new CalculationParameter(0, 1e6, true), // Min: 0 wie Kugelradius etc. Max: Unter dem Radius vom Braune Zwerg
+            new CalculationParameter(0, 1e8, true), // Min: 0 wie Kugelradius etc. Max: Unter dem Radius vom Braune Zwerg
             new CalculationParameter(0, 1e16, false)// Min: 0 Abstandgegenstände etc. Max: Lichtjahr Abstand
         },
         // https://de.wikipedia.org/wiki/Elektrische_Ladung 12.11.24
